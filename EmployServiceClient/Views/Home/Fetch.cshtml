@@ -1,0 +1,121 @@
+﻿<button id="getEmployees" class="btn btn-success">GetEmployees</button>
+<button id="getEmployeeById" class="btn btn-success">GetEmployeeById</button>
+<button id="postEmployee" class="btn btn-success">PostEmployee</button>
+<button id="putEmployee" class="btn btn-success">PutEmployee</button>
+<button id="deleteEmployee" class="btn btn-success">DeleteEmployee</button>
+<div id="employeeList"></div>
+<h6>ID : <input type="text" id="empId" /></h6>
+<h6>First Name : <input type="text" id="firstName" /></h6>
+<h6>Last Name : <input type="text" id="lastName" /></h6>
+<h6>Title : <input type="text" id="title" /></h6>
+
+@section Scripts
+{
+    <script>
+
+        var webApiBaseAddr = "https://localhost:7001";
+
+        $("#getEmployees").on("click",(event)=>{
+            //alert("getEmployees");
+            fetch(`${webApiBaseAddr}/api/Employees`, {
+            method:"GET",
+            }).then(result=>{
+            if (result.ok){
+                return result.json();
+            }            
+            }).then(data=>{
+            //alert(JSON.stringify(data))
+                $("#employeeList").empty();
+                var str='<ul>'
+                $.each(data, function(index, item){
+                str+=`<li>${item.employeeId},${item.firstName},${item.lastName},${item.title}</li>`;
+                str+='</ul>'
+                $("#employeeList").html(str);
+            });
+
+
+            }).catch(err=>{
+                alert(err);
+            });
+        });
+        $("#getEmployeeById").on("click", (event) => {
+            //alert("getEmployeeById");
+            var empId=$("#empId").val()
+            fetch(`${webApiBaseAddr}/api/Employees/${empId}`,{
+                method:"GET"
+            }).then(result=>{
+                if (result.ok){
+                    return result.json();
+                }
+            }).then(data=>{
+                alert(JSON.stringify(data));
+            }).catch(err=>{
+                alert(err);
+            });
+        });
+        $("#postEmployee").on("click", (event) => {
+            //alert("postEmployee");
+            var emp = {
+                EmployeeId : 0,
+                FirstName : $("#firstName").val(),
+                LastName : $("#lastName").val(),
+                Title : $("#title").val()
+            }
+            fetch(`${webApiBaseAddr}/api/Employees`,{
+                method:"post",
+                body:JSON.stringify(emp),
+                headers:{
+                    "content-type":"application/json"
+                }
+            }).then(result => {
+                if(result.ok){
+                    return result.text();
+                }
+            }).then(data => {
+                alart(data);
+            }).catch(err => {
+                alert(err);
+            });
+        });
+        $("#putEmployee").on("click", (event) => {
+            //alert("putEmployee");
+            var empId = $("#empId").val()
+            var emp = {
+                EmployeeID : $("#empId").val(),
+                FirstName : $("#firstName").val(),
+                LastName : $("#lastName").val(),
+                Title : $("#title").val()
+            };
+            fetch(`${webApiBaseAddr}/api/Employees/${empId}`,{
+                method:"put",
+                body:JSON.stringify(emp),
+                headers:{
+                    "content-type":"application/json"
+                }
+            }).then(result => {
+                if(result.ok){
+                    return result.text();
+                }
+            }).then(data => {
+                alert(data)
+            }).catch(err => {
+                alert(err)
+            });
+        });
+        $("#deleteEmployee").on("click ",(event) =>{
+            //alert("deleteEmployee");
+            var empId = $("#empId").val()
+            fetch(`${webApiBaseAddr}/api/Employees/${empId}`, {
+                method:"DELETE"
+            }).then(result=>{
+                if (result.ok) {
+                    return result.text();
+                }
+            }).then(data => { 
+                alert(data)
+            }).catch(err => {
+                alert(err)
+            });
+        });
+    </script>
+}
